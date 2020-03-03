@@ -4,14 +4,16 @@ import org.indigo.injector.core.Injector;
 import org.indigo.injector.core.MetadataProvider;
 import org.indigo.injector.metadata.BeanMetadata;
 import org.indigo.injector.metadata.enums.Scope;
+import org.indigo.injector.util.LogicalValidator;
 import org.indigo.injector.util.ReflectionUtil;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 abstract class AbstractInjector implements Injector {
+
+    private final LogicalValidator validator;
 
     private final ReflectionUtil reflectionUtil;
 
@@ -19,7 +21,8 @@ abstract class AbstractInjector implements Injector {
 
     private final Map<BeanMetadata, Object> state;
 
-    AbstractInjector(ReflectionUtil reflectionUtil, MetadataProvider metadataProvider) {
+    AbstractInjector(LogicalValidator validator, ReflectionUtil reflectionUtil, MetadataProvider metadataProvider) {
+        this.validator = validator;
         this.reflectionUtil = reflectionUtil;
         this.metadataProvider = metadataProvider;
         this.state = new ConcurrentHashMap<>();
@@ -44,7 +47,9 @@ abstract class AbstractInjector implements Injector {
     }
 
     protected BeanMetadata readMetadata(Class<?> clazz) {
-        return metadataProvider.scan(clazz, new HashSet<>());
+        BeanMetadata metadata = metadataProvider.scan(clazz);
+        validator.validateCyclical(metadata);
+        return metadata;
     }
 
 }
