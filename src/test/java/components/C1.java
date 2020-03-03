@@ -2,7 +2,7 @@ package components;
 
 import org.indigo.injector.annotations.Inject;
 
-public class C1 {
+public class C1 implements Component {
 
     private final C2 c2;
 

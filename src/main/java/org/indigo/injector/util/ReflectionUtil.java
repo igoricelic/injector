@@ -2,10 +2,7 @@ package org.indigo.injector.util;
 
 import org.indigo.injector.annotations.Inject;
 
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -21,19 +18,6 @@ public class ReflectionUtil {
     }
 
     public Optional<Constructor<?>> getInjectableConstructor(Class<?> clazz) {
-//        Constructor<?> constructor = null;
-//        int constructorCounter = 0;
-//        for(Constructor cons: clazz.getConstructors()) {
-//            if(Objects.nonNull(cons.getAnnotation(Inject.class))) {
-//                constructor = cons;
-//                constructorCounter++;
-//                if(constructorCounter > 1) {
-//                    // todo: exception
-//                    throw new RuntimeException("You must have one and only one injectable constructor!");
-//                }
-//            }
-//        }
-//        return Optional.ofNullable(constructor);
         return Stream.of(clazz.getDeclaredConstructors())
                 .filter(cons -> Objects.nonNull(cons.getAnnotation(Inject.class)))
                 .reduce((x, y) -> { throw new RuntimeException("You must have one and only one injectable constructor!"); });
@@ -50,5 +34,37 @@ public class ReflectionUtil {
             e.printStackTrace();
         }
     }
+
+    public void setValue(Object target, Object value, Field field) {
+        try {
+            field.set(target, value);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void makeAffordable(AccessibleObject accessibleObject) {
+        Assert.checkNotNull(accessibleObject);
+        if(Modifier.isFinal(readModifiers(accessibleObject))) {
+            String throwableMessage = "Final %s element '%s'. Final elements can't be mapped!";
+            if(accessibleObject instanceof Field)
+                throwableMessage = String.format(throwableMessage, "field", ((Field) accessibleObject).getName());
+            else if(accessibleObject instanceof Method)
+                throwableMessage = String.format(throwableMessage, "method", ((Method) accessibleObject).getName());
+            throw new RuntimeException(throwableMessage);
+        }
+        accessibleObject.setAccessible(true);
+    }
+
+    public int readModifiers(AccessibleObject accessibleObject) {
+        Assert.checkNotNull(accessibleObject);
+        if (accessibleObject instanceof Field) {
+            return ((Field) accessibleObject).getModifiers();
+        } else if(accessibleObject instanceof Method) {
+            return ((Method) accessibleObject).getModifiers();
+        }
+        throw new RuntimeException("Modifiers of present object can't be read!");
+    }
+
 
 }

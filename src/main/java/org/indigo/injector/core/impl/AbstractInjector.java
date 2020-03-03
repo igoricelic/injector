@@ -38,7 +38,8 @@ abstract class AbstractInjector implements Injector {
             state.put(beanMetadata, instance);
             beanMetadata.getSetterDependencies()
                     .forEach((setter, parameters) -> reflectionUtil.invokeMethod(instance, setter, parameters.stream().map(this::getInstance).toArray()));
-
+            beanMetadata.getFieldDependencies()
+                    .forEach((field, parameter) -> reflectionUtil.setValue(instance, getInstance(parameter), field));
             return instance;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();

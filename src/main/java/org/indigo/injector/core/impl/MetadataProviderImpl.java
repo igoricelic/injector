@@ -62,6 +62,7 @@ public final class MetadataProviderImpl implements MetadataProvider {
             for(Parameter parameter: method.getParameters()) {
                 dependencies.addLast(scan(parameter.getType()));
             }
+            reflectionUtil.makeAffordable(method);
             methodDependencyGrid.put(method, dependencies);
         });
         metadata.setSetterDependencies(methodDependencyGrid);
@@ -69,6 +70,7 @@ public final class MetadataProviderImpl implements MetadataProvider {
         List<Field> fieldDependencies = Stream.of(componentClazz.getDeclaredFields())
                 .filter(reflectionUtil::isInjectable)
                 .collect(Collectors.toList());
+        fieldDependencies.forEach(reflectionUtil::makeAffordable);
         Map<Field, BeanMetadata> fieldDependencyGrid = fieldDependencies.stream()
                 .collect(Collectors.toMap(Function.identity(), field -> scan(field.getType())));
         metadata.setFieldDependencies(fieldDependencyGrid);

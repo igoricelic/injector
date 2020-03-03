@@ -8,17 +8,17 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public class LogicalValidator {
 
-    private final Set<BeanMetadata> visitedBeans;
+    private final Set<BeanMetadata> validatedBeans;
 
     public LogicalValidator() {
-        visitedBeans = new CopyOnWriteArraySet<>();
+        validatedBeans = new CopyOnWriteArraySet<>();
     }
 
     public void validateCyclical(BeanMetadata beanMetadata) {
-        if(!visitedBeans.contains(beanMetadata)) {
+        if(!validatedBeans.contains(beanMetadata)) {
             if(isCyclic(beanMetadata, new HashSet<>(), new HashSet<>()))
                 throw new RuntimeException(String.format("Circular import %s!", beanMetadata.getType().getName()));
-            visitedBeans.add(beanMetadata);
+            validatedBeans.add(beanMetadata);
         }
     }
 
