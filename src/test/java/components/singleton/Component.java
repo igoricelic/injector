@@ -1,4 +1,4 @@
-package components;
+package components.singleton;
 
 public interface Component {
 }

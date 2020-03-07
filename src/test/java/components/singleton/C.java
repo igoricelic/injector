@@ -1,4 +1,4 @@
-package components;
+package components.singleton;
 
 import org.indigo.injector.annotations.Inject;
 

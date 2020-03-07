@@ -13,6 +13,9 @@ import java.util.*;
 public class BeanMetadata {
 
     @ToString.Include
+    private String name;
+
+    @ToString.Include
     private Scope scope = Scope.SINGLETON;
 
     @ToString.Include

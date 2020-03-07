@@ -4,7 +4,7 @@ import org.indigo.injector.core.MetadataProvider;
 import org.indigo.injector.util.LogicalValidator;
 import org.indigo.injector.util.ReflectionUtil;
 
-public class InjectorImpl extends AbstractInjector {
+public final class InjectorImpl extends AbstractInjector {
 
     public InjectorImpl(ReflectionUtil reflectionUtil, MetadataProvider metadataProvider, LogicalValidator validator) {
         super(validator, reflectionUtil, metadataProvider);

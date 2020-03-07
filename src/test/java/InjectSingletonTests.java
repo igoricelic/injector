@@ -1,15 +1,15 @@
-import components.*;
+import components.singleton.*;
 import org.indigo.injector.core.Injector;
 import org.indigo.injector.core.InjectorFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class InjectTests {
+public class InjectSingletonTests {
 
     private Injector injector;
 
-    public InjectTests() {
+    public InjectSingletonTests() {
         injector = InjectorFactory.getInjector();
     }
 

@@ -1,4 +1,4 @@
-import components.*;
+import components.singleton.*;
 import org.indigo.injector.core.DataModel;
 import org.indigo.injector.core.MetadataProvider;
 import org.indigo.injector.core.impl.MetadataProviderImpl;

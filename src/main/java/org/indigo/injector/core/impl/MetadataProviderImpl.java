@@ -1,5 +1,6 @@
 package org.indigo.injector.core.impl;
 
+import org.indigo.injector.annotations.Injectable;
 import org.indigo.injector.core.DataModel;
 import org.indigo.injector.core.MetadataProvider;
 import org.indigo.injector.metadata.BeanMetadata;
@@ -10,16 +11,15 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class MetadataProviderImpl implements MetadataProvider {
+
+    private static final String EMPTY_WORD = "";
 
     private final DataModel dataModel;
 
@@ -37,9 +37,18 @@ public final class MetadataProviderImpl implements MetadataProvider {
     public BeanMetadata scan(Class<?> clazz) {
         final Class<?> componentClazz = dataModel.bindableType(clazz).orElse(clazz);
         if(state.containsKey(componentClazz)) return state.get(componentClazz);
+
+        Injectable injectableAnnotation = componentClazz.getAnnotation(Injectable.class);
         BeanMetadata metadata = new BeanMetadata();
-        metadata.setScope(Scope.SINGLETON);
+        if (Objects.nonNull(injectableAnnotation)) {
+            metadata.setScope(injectableAnnotation.scope());
+            metadata.setName(EMPTY_WORD.equals(injectableAnnotation.name()) ? componentClazz.getName() : injectableAnnotation.name());
+        } else {
+            metadata.setScope(Scope.SINGLETON);
+            metadata.setName(componentClazz.getName());
+        }
         metadata.setType(componentClazz);
+
         state.put(componentClazz, metadata);
 
         Constructor constructor = reflectionUtil.getDefaultConstructor(componentClazz)
